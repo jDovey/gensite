@@ -39,7 +39,7 @@ def index():
             next(reader)
             for row in reader:
                 number = str(row)
-                # format as phone number
+                # format as phone number (takes it out of the array [])
                 number = str(number[2:len(number)-2])
                 # iterate through csv file of numbers and for each number check if it is repeat or pair
                 # now need to get the output and append this to a new csv file
@@ -58,6 +58,7 @@ def index():
                     outlist = [number, masked, pattern]
                     print(outlist)
                     writer.writerow(outlist)
+                    # continue iterates to next row in reader
                     continue
                 answer = pairs(number)
                 if bool(answer):
@@ -83,3 +84,42 @@ def download(filename):
     uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
     # Returning file from appended path
     return send_from_directory(directory=uploads, filename=filename)
+
+@app.route("/check", methods=["GET", "POST"])
+def checknum():
+    if request.method == "GET":
+        return render_template("check.html")
+    
+    if request.method == "POST":
+        number = request.form.get("number")
+
+        answer = repeats(number)
+        if bool(answer["pattern"]):
+            masked = answer["masked"]
+            # check if digits in repeat are the same e.g. 777
+            if check(answer["pattern"]):
+                c = "Same"
+            else:
+                c = "Unique"
+            digit = str(len(answer["pattern"])) + "digit"
+            pattern = str(answer["repeats"]) + c + digit + "Repeats"
+            # create list for current number to output to csv
+            outlist = [number, masked, pattern]
+            print(outlist)
+            return render_template("check.html", number=outlist)
+
+        answer = pairs(number)
+        if bool(answer):
+            pattern = answer["pattern"]
+            masked = answer["masked"]
+            outlist = [number, masked, pattern]
+            print(outlist)
+            return render_template("check.html", number=outlist)
+            
+
+        pattern = "No match!"
+        masked = number
+        outlist = [number, masked, pattern]
+        print(outlist)
+        return render_template("check.html", number=outlist)
+
