@@ -28,7 +28,7 @@ def index():
 
         # need to use a csv file to get inputs
         # iterate through csv file of numbers and for each number check if it is repeat or pair
-        outfile = open("static/outfile.csv", 'w')
+        outfile = open("app/static/outfile.csv", 'w')
         header = ['number', 'masked_number', 'pattern']
         writer = csv.writer(outfile)
         writer.writerow(header)
@@ -44,26 +44,52 @@ def index():
                 # iterate through csv file of numbers and for each number check if it is repeat or pair
                 # now need to get the output and append this to a new csv file
                 # columns will be number, masked, pattern or value
-                answer = repeats(number)
-                if bool(answer["pattern"]):
-                    masked = answer["masked"]
+                RepAnswer = repeats(number)
+                print(RepAnswer["value"])
+                PairAnswer = pairs(number)
+                if bool(RepAnswer["pattern"]) and bool(PairAnswer):
+                    if RepAnswer["value"] > 1:
+                        # return the repanswer
+                        masked = RepAnswer["masked"]
+                        # check if digits in repeat are the same e.g. 777
+                        if check(RepAnswer["pattern"]):
+                            c = "Same"
+                        else:
+                            c = "Unique"
+                        digit = str(len(RepAnswer["pattern"])) + "digit"
+                        pattern = str(RepAnswer["repeats"]) + c + digit + "Repeats"
+                        # create list for current number to output to csv
+                        outlist = [number, masked, pattern]
+                        print(outlist)
+                        writer.writerow(outlist)
+                        # continue iterates to next row in reader
+                        continue
+                    else:
+                        pattern = PairAnswer["pattern"]
+                        masked = PairAnswer["masked"]
+                        outlist = [number, masked, pattern]
+                        print(outlist)
+                        writer.writerow(outlist)
+                        continue
+
+                if bool(RepAnswer["pattern"]):
+                    masked = RepAnswer["masked"]
                     # check if digits in repeat are the same e.g. 777
-                    if check(answer["pattern"]):
+                    if check(RepAnswer["pattern"]):
                         c = "Same"
                     else:
                         c = "Unique"
-                    digit = str(len(answer["pattern"])) + "digit"
-                    pattern = str(answer["repeats"]) + c + digit + "Repeats"
+                    digit = str(len(RepAnswer["pattern"])) + "digit"
+                    pattern = str(RepAnswer["repeats"]) + c + digit + "Repeats"
                     # create list for current number to output to csv
                     outlist = [number, masked, pattern]
                     print(outlist)
                     writer.writerow(outlist)
                     # continue iterates to next row in reader
                     continue
-                answer = pairs(number)
-                if bool(answer):
-                    pattern = answer["pattern"]
-                    masked = answer["masked"]
+                if bool(PairAnswer):
+                    pattern = PairAnswer["pattern"]
+                    masked = PairAnswer["masked"]
                     outlist = [number, masked, pattern]
                     print(outlist)
                     writer.writerow(outlist)
@@ -105,7 +131,7 @@ def checknum():
             pattern = str(answer["repeats"]) + c + digit + "Repeats"
             # create list for current number to output to csv
             outlist = [number, masked, pattern]
-            print(outlist)
+            print(outlist[1])
             return render_template("check.html", number=outlist)
 
         answer = pairs(number)
@@ -113,13 +139,13 @@ def checknum():
             pattern = answer["pattern"]
             masked = answer["masked"]
             outlist = [number, masked, pattern]
-            print(outlist)
+            print(outlist[1])
             return render_template("check.html", number=outlist)
             
 
         pattern = "No match!"
         masked = number
         outlist = [number, masked, pattern]
-        print(outlist)
+        print(outlist[1])
         return render_template("check.html", number=outlist)
 

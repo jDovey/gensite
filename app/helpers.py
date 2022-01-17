@@ -27,7 +27,8 @@ def repeats(number):
     answer = {
         "repeats":0,
         "pattern":"",
-        "masked":""
+        "masked":"",
+        "value":0
     }
     patternrepeat = r".*?(\1)"
     # iterate through length of group
@@ -53,6 +54,7 @@ def repeats(number):
                     answer["repeats"] = repeat_amount
                     answer["pattern"] = number_group
                     answer["masked"] = mask(number_group, number)
+                    answer["value"] = repeat_amount * log10(len(number_group))
 
                 # compare to current highest value repeat
                 # log of substring allows the no. repeats to be valued higher than
@@ -61,6 +63,7 @@ def repeats(number):
                     answer["repeats"] = repeat_amount
                     answer["pattern"] = number_group
                     answer["masked"] = mask(number_group, number)
+                    answer["value"] = repeat_amount * log10(len(number_group))
 
 
     return answer
@@ -110,3 +113,37 @@ def apology(message, code=400):
             s = s.replace(old, new)
         return s
     return render_template("apology.html", top=code, bottom=escape(message)), code
+
+
+
+                
+                #answer = repeats(number)
+                #if bool(answer["pattern"]):
+                #    masked = answer["masked"]
+                #    # check if digits in repeat are the same e.g. 777
+                #    if check(answer["pattern"]):
+                #        c = "Same"
+                #    else:
+                #        c = "Unique"
+                #    digit = str(len(answer["pattern"])) + "digit"
+                #    pattern = str(answer["repeats"]) + c + digit + "Repeats"
+                #    # create list for current number to output to csv
+                #    outlist = [number, masked, pattern]
+                #    print(outlist)
+                #    writer.writerow(outlist)
+                #    # continue iterates to next row in reader
+                #    continue
+                #answer = pairs(number)
+                #if bool(answer):
+                #    pattern = answer["pattern"]
+                #    masked = answer["masked"]
+                #    outlist = [number, masked, pattern]
+                #    print(outlist)
+                #    writer.writerow(outlist)
+                #    continue
+                #    
+                #pattern = "No match!"
+                #masked = number
+                #outlist = [number, masked, pattern]
+                #print(outlist)
+                #writer.writerow(outlist)
