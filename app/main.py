@@ -7,7 +7,7 @@ from app.helpers import check, mask, repeats, pairs, apology
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = 'static/files'
+UPLOAD_FOLDER = os.path.join('gensite','app','static')
 app.config['UPLOAD_FOLDER'] =  UPLOAD_FOLDER
 
 @app.route("/", methods=["GET", "POST"])
@@ -23,18 +23,19 @@ def index():
 
         if not os.path.isdir('static'):
             os.mkdir('static')
-        filepath = os.path.join('static', 'input.csv')
+        filepath = os.path.join(UPLOAD_FOLDER, 'input.csv')
         uploaded_file.save(filepath)
 
         # need to use a csv file to get inputs
         # iterate through csv file of numbers and for each number check if it is repeat or pair
-        outfile = open("app/static/outfile.csv", 'w')
+        outpath = os.path.join('gensite','app','static','outfile.csv')
+        outfile = open(outpath, 'w')
         header = ['number', 'masked_number', 'pattern']
         writer = csv.writer(outfile)
         writer.writerow(header)
 
         # need to use a csv file to get inputs
-        with open("static/input.csv", "r") as file:
+        with open(filepath, "r") as file:
             reader = csv.reader(file)
             next(reader)
             for row in reader:
@@ -45,7 +46,6 @@ def index():
                 # now need to get the output and append this to a new csv file
                 # columns will be number, masked, pattern or value
                 RepAnswer = repeats(number)
-                print(RepAnswer["value"])
                 PairAnswer = pairs(number)
                 if bool(RepAnswer["pattern"]) and bool(PairAnswer):
                     if RepAnswer["value"] > 1:
@@ -60,7 +60,6 @@ def index():
                         pattern = str(RepAnswer["repeats"]) + c + digit + "Repeats"
                         # create list for current number to output to csv
                         outlist = [number, masked, pattern]
-                        print(outlist)
                         writer.writerow(outlist)
                         # continue iterates to next row in reader
                         continue
@@ -68,7 +67,6 @@ def index():
                         pattern = PairAnswer["pattern"]
                         masked = PairAnswer["masked"]
                         outlist = [number, masked, pattern]
-                        print(outlist)
                         writer.writerow(outlist)
                         continue
 
@@ -83,7 +81,6 @@ def index():
                     pattern = str(RepAnswer["repeats"]) + c + digit + "Repeats"
                     # create list for current number to output to csv
                     outlist = [number, masked, pattern]
-                    print(outlist)
                     writer.writerow(outlist)
                     # continue iterates to next row in reader
                     continue
@@ -91,14 +88,12 @@ def index():
                     pattern = PairAnswer["pattern"]
                     masked = PairAnswer["masked"]
                     outlist = [number, masked, pattern]
-                    print(outlist)
                     writer.writerow(outlist)
                     continue
 
                 pattern = "No match!"
                 masked = number
                 outlist = [number, masked, pattern]
-                print(outlist)
                 writer.writerow(outlist)
 
     return render_template("download.html")
@@ -109,13 +104,13 @@ def download(filename):
     # Appending app path to upload folder path within app root folder
     uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
     # Returning file from appended path
-    return send_from_directory(directory=uploads, filename=filename)
+    return send_from_directory(directory=uploads, path=filename)
 
 @app.route("/check", methods=["GET", "POST"])
 def checknum():
     if request.method == "GET":
         return render_template("check.html")
-    
+
     if request.method == "POST":
         number = request.form.get("number")
 
@@ -131,7 +126,6 @@ def checknum():
             pattern = str(answer["repeats"]) + c + digit + "Repeats"
             # create list for current number to output to csv
             outlist = [number, masked, pattern]
-            print(outlist[1])
             return render_template("check.html", number=outlist)
 
         answer = pairs(number)
@@ -139,13 +133,11 @@ def checknum():
             pattern = answer["pattern"]
             masked = answer["masked"]
             outlist = [number, masked, pattern]
-            print(outlist[1])
             return render_template("check.html", number=outlist)
-            
+
 
         pattern = "No match!"
         masked = number
         outlist = [number, masked, pattern]
-        print(outlist[1])
         return render_template("check.html", number=outlist)
 

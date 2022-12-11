@@ -116,7 +116,8 @@ def apology(message, code=400):
 
 
 
-                
+                # First idea to solve the issue:
+                # Keeping in to see progession of problem solving
                 #answer = repeats(number)
                 #if bool(answer["pattern"]):
                 #    masked = answer["masked"]
