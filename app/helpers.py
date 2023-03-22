@@ -58,7 +58,7 @@ def repeats(number):
 
                 # compare to current highest value repeat
                 # log of substring allows the no. repeats to be valued higher than
-                # the length of the 
+                # the length of the pattern
                 if (repeat_amount * log10(len(number_group))) > (answer["repeats"] * log10(len(answer["pattern"]))):
                     answer["repeats"] = repeat_amount
                     answer["pattern"] = number_group
